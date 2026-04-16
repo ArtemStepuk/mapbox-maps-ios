@@ -418,6 +418,49 @@ public class StyleManager {
         sourceManager.removeGeoJSONSourceFeatures(forSourceId: sourceId, featureIds: featureIds, dataId: dataId)
     }
 
+    /// Removes models from a model source by their IDs.
+    ///
+    /// - Parameters:
+    ///   - sourceId: The identifier of the model source.
+    ///   - modelIds: An array of model IDs to remove from the source.
+    /// - Throws: ``StyleError`` if there is a problem removing models from the source.
+    public func removeModelSourceModel(forSourceId sourceId: String, modelIds: [String]) throws {
+        try sourceManager.setSourceProperty(
+            for: sourceId,
+            property: ModelSource.CodingKeys.models.rawValue,
+            value: modelIds.reduce(into: [:], { partialResult, id in
+                partialResult[id] = NSNull()
+            })
+        )
+    }
+
+    /// Removes a single model from a model source by its ID.
+    ///
+    /// - Parameters:
+    ///   - sourceId: The identifier of the model source.
+    ///   - modelId: The ID of the model to remove from the source.
+    /// - Throws: ``StyleError`` if there is a problem removing the model from the source.
+    public func removeModelSourceModel(forSourceId sourceId: String, modelId: String) throws {
+        try sourceManager.setSourceProperty(
+            for: sourceId,
+            property: ModelSource.CodingKeys.models.rawValue,
+            value: [modelId: NSNull()]
+        )
+    }
+
+    /// Removes all models from a model source.
+    ///
+    /// - Parameters:
+    ///   - sourceId: The identifier of the model source.
+    /// - Throws: ``StyleError`` if there is a problem removing models from the source.
+    public func removeAllModelSourceModel(forSourceId sourceId: String) throws {
+        try sourceManager.setSourceProperty(
+            for: sourceId,
+            property: ModelSource.CodingKeys.models.rawValue,
+            value: NSNull()
+        )
+    }
+
     /// `true` if and only if the style JSON contents, the style specified sprite,
     /// and sources are all loaded, otherwise returns `false`.
     public var isStyleLoaded: Bool {
@@ -602,9 +645,10 @@ public class StyleManager {
     ///  - Returns:
     ///   - The style import configuration or a string describing an error if the operation was not successful.
     public func getStyleImportConfigProperties(for importId: String) throws -> [String: StylePropertyValue] {
-        try handleExpected {
+        let result: [String: CoreStylePropertyValue] = try handleExpected {
             return styleManager.getStyleImportConfigProperties(forImportId: importId)
         }
+        return result.mapValues(StylePropertyValue.Marshaller.toSwift)
     }
 
     /// Gets the value of style import config.
@@ -616,9 +660,10 @@ public class StyleManager {
     ///  - Returns:
     ///   - The style import configuration or a string describing an error if the operation was not successful.
     public func getStyleImportConfigProperty(for importId: String, config: String) throws -> StylePropertyValue {
-        try handleExpected {
+        let result: CoreStylePropertyValue = try handleExpected {
             return styleManager.getStyleImportConfigProperty(forImportId: importId, config: config)
         }
+        return StylePropertyValue.Marshaller.toSwift(result)
     }
 
     /// Sets style import config.
@@ -830,7 +875,7 @@ public class StyleManager {
     /// - Returns:
     ///     The value of the property in the layer with layerId.
     public func layerProperty(for layerId: String, property: String) -> StylePropertyValue {
-        return styleManager.getStyleLayerProperty(forLayerId: layerId, property: property)
+        return StylePropertyValue.Marshaller.toSwift(styleManager.getStyleLayerProperty(forLayerId: layerId, property: property))
     }
 
     /// Sets a JSON value to a style layer property.
@@ -873,7 +918,7 @@ public class StyleManager {
     /// - Returns:
     ///     The default value of the property for the layers with type layerType.
     public static func layerPropertyDefaultValue(for layerType: LayerType, property: String) -> StylePropertyValue {
-        return CoreStyleManager.getStyleLayerPropertyDefaultValue(forLayerType: layerType.rawValue, property: property)
+        return StylePropertyValue.Marshaller.toSwift(CoreStyleManager.getStyleLayerPropertyDefaultValue(forLayerType: layerType.rawValue, property: property))
     }
 
     /// Gets the properties for a style layer.
@@ -1208,7 +1253,7 @@ public class StyleManager {
     /// - Parameter lightId: The unique identifier of the style light in lights list.
     /// - Parameter property: The style light property name.
     public func lightPropertyValue(for lightId: String, property: String) -> StylePropertyValue {
-        styleManager.getStyleLightProperty(forId: lightId, property: property)
+        StylePropertyValue.Marshaller.toSwift(styleManager.getStyleLightProperty(forId: lightId, property: property))
     }
 
     /// Set global directional lightning.
@@ -1302,7 +1347,7 @@ public class StyleManager {
     ///
     /// - Returns: Style terrain property value.
     public func terrainProperty(_ property: String) -> StylePropertyValue {
-        return styleManager.getStyleTerrainProperty(forProperty: property)
+        return StylePropertyValue.Marshaller.toSwift(styleManager.getStyleTerrainProperty(forProperty: property))
     }
 
     // MARK: - Atmosphere
@@ -1362,7 +1407,7 @@ public class StyleManager {
     ///
     /// - Returns: Style atmosphere property value.
     public func atmosphereProperty(_ property: String) -> StylePropertyValue {
-        return styleManager.getStyleAtmosphereProperty(forProperty: property)
+        return StylePropertyValue.Marshaller.toSwift(styleManager.getStyleAtmosphereProperty(forProperty: property))
     }
 
     // MARK: Model

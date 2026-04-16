@@ -16,8 +16,12 @@ struct SwiftUIExamples {
             Example("Interactive features", note: "Use featuresets to add interactions to Standard Style.", destination: StandardInteractiveFeaturesExample())
             Example("Interactive buildings", note: "Add interactions to buildings in Standard Style", destination: StandardInteractiveBuildingsExample())
         },
+        Examples.Category("3D") {
+            Example("3D model with feature-state driven interactions", note: "Use expressions and feature state to control model materials and nodes.", destination: Interactive3DModelFeatureStateExample())
+            Example("Animated 3D airplane model", note: "Animate a 3D airplane model along a flight path with animated propellers, landing gear, and lights using feature state.", destination: Animated3DModelSourceExample())
+        },
         Examples.Category("Annotations") {
-            Example("Add Map Markers", note: "Add/remove Markers to your map.", destination: MarkersExample())
+            Example("Add Map Markers", note: "Add Markers to your map.", destination: MarkersExample())
             Example("View Annotations", note: "Add/remove view annotation on tap.", destination: ViewAnnotationsExample())
             Example("Weather annotations", note: "Show view annotations with contents changed on selection.", destination: WeatherAnnotationExample())
             Example("Layer Annotations", note: "Add/remove layer annotation on tap.", destination: AnnotationsExample())
@@ -34,6 +38,7 @@ struct SwiftUIExamples {
             Example("Color Themes", note: "Showcase the Color Theme API", destination: ColorThemeExample())
         },
         Examples.Category("🔬 Experimental APIs") {
+            Example("Accessibility Scale", note: "Automatic map symbol scaling based on system text size preferences.", destination: AccessibilityScaleExample())
             Example("Line elevation", note: "Showcase of the Line Elevation API.", destination: ElevatedLineMapView())
         },
         Examples.Category("Testing Examples") {
@@ -137,6 +142,8 @@ struct ExampleView<Content>: View where Content: View {
         content
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarHidden(isNavigationBarHidden)
+            .toolbar(isNavigationBarHidden ? .hidden : .automatic, for: .tabBar)
+            .statusBarHidden(isNavigationBarHidden)
             .onShake {
                 isNavigationBarHidden.toggle()
             }

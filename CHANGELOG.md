@@ -4,14 +4,58 @@ Mapbox welcomes participation and contributions from everyone.
 
 ## main
 
+## 11.20.3 - 14 April, 2026
+
+## 11.22.0-rc.1 - 08 April, 2026
+
+* Fix old 3D puck model remaining after updating the puck model.
+
+## 11.21.0 - 02 April, 2026
+
+## 11.21.0-rc.1 - 23 March, 2026
+
+## 11.20.2 - 25 March, 2026
+
+## 11.20.1 - 17 March, 2026
+
+## 11.20.0 - 13 March, 2026
+
+* Fix incorrect positioning of map ornaments when multiple ornaments are placed in the same corner.
+* Expose `MapboxMap.onStyleAttributionsChanged`, use this event to observe when attributions have been changed due to style change, source metadata change, or if sources were removed or added.
+
+## 11.20.0-rc.1 - 03 March, 2026
+
+
+## 11.19.1 - 10 March, 2026
+
+
+## 11.19.0 - 24 February, 2026
+
+### Features ✨ and improvements 🏁
+* Add animation to experimental `Marker` with two animation triggers: `appear` and `disappear`. Each trigger accepts `MarkerAnimationEffect` including `wiggle` (pendulum rotation), `scale`, `fadeIn`, and `fadeOut`. Effects can be customized with parameters (e.g., `scale(from: 0.5, to: 1.5)`, `fade(from: 0.5, to: 1.0)`) and combined for rich animations. See `MarkersExample` for usage.
+
+### Bug fixes 🐞
+* Fix map panning not working on ViewAnnotations
+
+## 11.19.0-rc.1 - 12 February, 2026
+
+### Features ✨ and improvements 🏁
+* Introduce new `LineLayer.lineElevationGroundScale` property to scale elevated lines with terrain exaggeration.
+* Promote elevated lines properties to stable: `LineLayer.lineZOffset` and `LineLayer.lineElevationReference`.
+* Introduce experimental `SymbolScaleBehavior` API to automatically scale map symbols (icons and text) based on system accessibility text size settings. Set `MapboxMap.symbolScaleBehavior` property to configure: `.system` (automatic scaling), `.system(mapping:)` (custom mapping function), or `.fixed(scaleFactor:)` (fixed scale, default is 1.0). Valid scale factor range is [0.8, 2.0]. Automatic scaling is opt-in; symbols default to fixed 1.0x scale.
+* Add `ModelSource` support with `Model`, `ModelMaterialOverride`, and `ModelNodeOverride` to enable interactive 3D models. Material overrides allow customization of color, emissive strength, opacity, and color mix intensity. Node overrides enable control of model part transformations such as rotating doors, landing gear, or propellers. Models can be updated via source-driven approach (modifying `ModelSource.models` directly) or feature-state driven approach (using expressions with feature state for dynamic control). For implementation examples, see `Interactive3DModelFeatureStateExample` (SwiftUI), `Interactive3DModelSourceExample` (UIKit), and `Animated3DModelSourceExample` (SwiftUI).
+
 ## 11.19.0-beta.1 - 28 January, 2026
 
 ### Features ✨ and improvements 🏁
 * Introduce experimental `queryRenderedRasterValues` API for querying the rendered raster array value at a point on the map.
-* Introduce new `LineLayer.lineElevationGroundScale` property to scale elevated lines with terrain exaggeration.
 
 ### Bug fixes 🐞
 * Fix `FrameViewAnnotationsExample` annotations disappearing before shadow leaves the screen.
+
+## 11.18.2 - 09 February, 2026
+
+## 11.18.1 - 29 January, 2026
 
 ## 11.18.0 - 15 January, 2026
 
@@ -33,6 +77,7 @@ Mapbox welcomes participation and contributions from everyone.
 
 ### Bug fixes 🐞
 * Fix `userData` payload for `onSourceDataLoaded` event during GeoJSON partial update.
+## 11.17.2 - 24 February, 2026
 
 ## 11.17.1 - 11 December, 2025
 

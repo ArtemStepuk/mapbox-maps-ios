@@ -1,6 +1,6 @@
 ## License
 
-Mapbox Maps for iOS version 11.20.0-SNAPSHOT-01-30--04-51.git-0aeb8e4
+Mapbox Maps for iOS version 11.23.0-SNAPSHOT-04-16--02-05.git-8729722
 Mapbox Maps iOS SDK
 
 Copyright &copy; 2021 - 2026 Mapbox, Inc. All rights reserved.
@@ -31,7 +31,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ---
 
-### MapboxCoreMaps,11.20.0-SNAPSHOT-01-30--04-51.git-0aeb8e4,Mapbox ToS,Mapbox,https://www.mapbox.com/
+### MapboxCoreMaps,11.23.0-SNAPSHOT-04-16--02-05.git-8729722,Mapbox ToS,Mapbox,https://www.mapbox.com/
 
 ```
 Mapbox Core Maps version 11.0
@@ -109,7 +109,7 @@ SPDX-License-Identifier: Unicode-3.0
 
 ---
 
-### filesystem,1.5.10,MIT,Steffen Schümann,https://github.com/gulrak/filesystem/
+### filesystem,0e72911ba0f37f3eb883b181b855a5f4eb046ca1,MIT,Steffen Schümann,https://github.com/gulrak/filesystem/
 
 ```
 Copyright (c) 2018, Steffen Schümann <s.schuemann@pobox.com>
@@ -1581,7 +1581,7 @@ The EGL Specification and various headers:
 
 ---
 
-### abseil-containers,dev,Apache-2.0,Google,https://github.com/abseil/abseil-cpp.git
+### abseil-containers,76bb2432,Apache-2.0,Google,https://github.com/abseil/abseil-cpp.git
 
 ```
 

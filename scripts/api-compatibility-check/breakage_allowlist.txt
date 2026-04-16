@@ -2249,3 +2249,17 @@ Struct CameraOptions has been removed
 
 // unused import RegexBuilder was removed
 Extension String has removed conformance to RegexComponent
+
+// Add more parameters to Model initializer when exposing ModelSource
+Constructor Model.init(id:uri:position:orientation:) has been removed
+// Update experimental Marker interaction APIs
+Func Marker.onTapGesture(perform:) has been removed
+
+Struct SymbolScaleBehavior is now with @_documentation
+Var MapboxMap.symbolScaleBehavior is now with @_documentation
+
+// Fix api compat check
+Accessor PolylineAnnotationManager.lineCutoutFadeWidth.Modify() is now with @_spi
+Accessor PolylineAnnotationManager.lineCutoutFadeWidthTransition.Modify() is now with @_spi
+Accessor PolylineAnnotationManager.lineCutoutOpacity.Modify() is now with @_spi
+Accessor PolylineAnnotationManager.lineCutoutOpacityTransition.Modify() is now with @_spi
