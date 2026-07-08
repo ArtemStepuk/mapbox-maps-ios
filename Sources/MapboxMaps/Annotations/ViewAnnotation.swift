@@ -104,6 +104,34 @@ public final class ViewAnnotation {
         set { setProperty(\.ignoreCameraPadding, value: newValue, oldValue: ignoreCameraPadding) }
     }
 
+    /// When `true`, this annotation participates in symbol-layer collision detection.
+    ///
+    /// Use this property to hide symbols below view annotation.
+    ///
+    /// If the view has views with `UIView.mbxViewAnnotationCollisionBox = true` in it's hierarchy, each box is used individually.
+    /// Otherwise the full annotation bounding box is used as the collision region.
+    ///
+    /// Use ``MapView/debugOptions`` and ``MapViewDebugOptions.collision``  to debug the collision boxes.
+    ///
+    /// The annotations that enable this property will be placed in a separate pass with higher priority;
+    /// they will also ignore symbol layers in the ``ViewAnnotationManager/viewAnnotationAvoidLayers``.
+    @_documentation(visibility: public)
+    @_spi(Experimental)
+    public var enableSymbolLayerCollision: Bool {
+        get { property(\.enableSymbolLayerCollision, default: false) }
+        set { setProperty(\.enableSymbolLayerCollision, value: newValue, oldValue: enableSymbolLayerCollision) }
+    }
+
+    /// When `true`, this annotation avoids the regions set by ``ViewAnnotationManager/viewAnnotationAvoidRegions``.
+    ///
+    /// Default value is `false`.
+    @_documentation(visibility: public)
+    @_spi(Experimental)
+    public var enableAvoidRegions: Bool {
+        get { property(\.enableAvoidRegions, default: false) }
+        set { setProperty(\.enableAvoidRegions, value: newValue, oldValue: enableAvoidRegions) }
+    }
+
     /// Specifies if this view annotation is visible or not.
     ///
     /// The property is `true` by default.
@@ -389,6 +417,14 @@ public final class ViewAnnotation {
         size.height.round(.up)
         setProperty(\.width, value: size.width, oldValue: options.width)
         setProperty(\.height, value: size.height, oldValue: options.height)
+
+        // Collect sub-element collision boxes after layout (frames are valid post-systemLayoutSizeFitting)
+        updateCollisionBoxes()
+    }
+
+    private func updateCollisionBoxes() {
+        let boxes = view.collisionBoxes()
+        setProperty(\.collisionBoxes, value: boxes, oldValue: options.collisionBoxes)
     }
 
     private func wrapError(_ action: String, _ body: () throws -> Void) {

@@ -3,7 +3,7 @@ import UIKit
 import CoreLocation
 import CoreImage.CIFilterBuiltins
 @_spi(Marshalling) import MapboxCoreMaps
-@_implementationOnly import MapboxCommon_Private
+internal import MapboxCommon_Private
 
 internal protocol MapSnapshotterProtocol: StyleManagerProtocol {
     func setSizeFor(_ size: Size)
@@ -142,7 +142,7 @@ public class Snapshotter: StyleManager {
                 coordinateForPoint: coordinateForPoint
             )
             guard let mbmImage = mbmImage,
-                let uiImage = UIImage(mbmImage: mbmImage, scale: scale) else {
+                  let uiImage = UIImage(mbmImage: MBXImage.Marshaller.toSwift(mbmImage), scale: scale) else {
                 completion(.failure(.snapshotFailed(reason: "Could not convert internal Image type to UIImage.")))
                 return
             }
@@ -150,15 +150,13 @@ public class Snapshotter: StyleManager {
             guard let self = self else { return }
 
             // Render attributions over the snapshot
-            Attribution.parse(snapshot.attributions()) { [weak self] attributions in
-                self?.overlaySnapshotWith(
-                    attributions: attributions,
-                    snapshotImage: uiImage,
-                    options: options,
-                    overlayDescriptor: overlayDescriptor,
-                    completion: completion
-                )
-            }
+            self.overlaySnapshotWith(
+                attributions: Attribution.parse(snapshot.attributions()),
+                snapshotImage: uiImage,
+                options: options,
+                overlayDescriptor: overlayDescriptor,
+                completion: completion
+            )
         }
     }
 

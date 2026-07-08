@@ -37,14 +37,16 @@ struct SwiftUIExamples {
             Example("Geofencing Playground", note: "Showcase isochrone API together with geofences.", destination: GeofencingPlayground())
             Example("Color Themes", note: "Showcase the Color Theme API", destination: ColorThemeExample())
         },
-        Examples.Category("🔬 Experimental APIs") {
+        Examples.Category("Experimental APIs") {
             Example("Accessibility Scale", note: "Automatic map symbol scaling based on system text size preferences.", destination: AccessibilityScaleExample())
             Example("Line elevation", note: "Showcase of the Line Elevation API.", destination: ElevatedLineMapView())
+            Example("Line Cutout", note: "Make route lines visible through 3D buildings using the line cutout API.", destination: LineCutoutExample())
         },
         Examples.Category("Testing Examples") {
             Example("Map settings", note: "Showcase of the most possible map configurations.", destination: MapSettingsExample())
             Example("Interactions playground", note: "Interactions edge cases", destination: InteractionsPlayground())
             Example("Viewport Playground", note: "Showcase of the possible viewport states.", destination: ViewportPlayground())
+            Example("View Annotation Collision", note: "Make view annotations to hide basemap symbols", destination: ViewAnnotationsCollisionExample())
             Example("Viewport In Fixed Frame", note: "Overview viewport in Map with fixed frame", destination: ViewportInFixedFrameExample())
             Example("Puck playground", note: "Display user location using puck.", destination: PuckPlayground())
             Example("Annotation Order", note: "Test the rendering order of annotations.", destination: AnnotationsOrderTestExample())

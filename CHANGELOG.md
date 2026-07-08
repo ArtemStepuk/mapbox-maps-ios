@@ -4,11 +4,85 @@ Mapbox welcomes participation and contributions from everyone.
 
 ## main
 
+* Animate verticalFov along with other camera parameters.
+* Introduce new experimental `ViewAnnotationManager.viewAnnotationAvoidRegions` which allows to specify rectangular screen regions that view annotations should avoid. View annotations opt in to this behaviour via the new experimental `ViewAnnotation.enableAvoidRegions` option.
+
+## 11.26.0-rc.1 - 29 June, 2026
+
+### Features ✨ and improvements 🏁
+
+* Introduce new experimental `ViewAnnotation.enableSymbolLayerCollision` (`MapViewAnnotation.enableSymbolLayerCollision()` in SwiftUI) option which allows view annotations to hide underlying map symbols to avoid visual clutter.
+By default, the full bounding box of the view annotation is used for collision detection. If your annotation has a non-rectangular shape, it is highly recommended to mark the specific subviews that should participate via the new experimental `UIView.mbxViewAnnotationCollisionBox` flag (`View.mbxViewAnnotationCollisionBox()` in SwiftUI).
+* Support drawing view annotation collision boxes when `MapView.debugOptions` is set to `.collision`.
+* Improved `Marker` -- now it automatically hides the underlying map symbols below it's icon and text.
+* [SwiftUI] Added experimental `Map.viewAnnotationAvoidLayers()` which allows to set view annotations to avoid layers.
+
+## 11.25.1 - 03 July, 2026
+
+## 11.25.0 - 11 June, 2026
+
+## 11.25.0-rc.2 - 04 June, 2026
+
+## 11.25.0-rc.1 - 02 June, 2026
+
+### Features ✨ and improvements 🏁
+* Add Standard `IndoorLabels` featureset and indoor configuration options (`showIndoor`, `showIndoorLabels`, `colorIndoorLabelHighlight`, `colorIndoorLabelSelect`) for the Mapbox Standard style.
+
+### Bug fixes 🐞
+* Fix bug when tap on a view annotation triggered tap handler on Map view itself.
+* Source attribution strings are no longer parsed through `NSAttributedString`'s HTML importer, which silently fetched remote subresources referenced by attacker-influenced TileJSON `attribution` fields. Attribution markup is now extracted with a restricted in-process parser, and only `http`/`https` URLs are surfaced as actionable links.
+
+## 11.24.3 - 27 May, 2026
+
+## 11.24.2 - 20 May, 2026
+
+## 11.24.1 - 19 May, 2026
+
+## 11.24.0 - 18 May, 2026
+
+## 11.24.0-rc.1 - 05 May, 2026
+
+* Fix `MapView` rendering blank when attached to an already-active CarPlay scene.
+* Fix SF Symbols silently failing to display when used as style images via `PointAnnotation.image` or `StyleManager.addImage`.
+
+## Features ✨ and improvements 🏁
+* Expose `FeaturesetFeature.originalFeature` property.
+## 11.23.0 - 29 April, 2026
+
+## 11.23.0-rc.1 - 20 April, 2026
+* Use TileStore::setRootPath(path) and TileStore::create() instead of deprecated TileStore::create(path).
+* Add setRootPath method to TileStore swift wrapper.
+
 ## 11.20.3 - 14 April, 2026
+## 11.22.4 - 03 July, 2026
+
+## 11.22.3 - 06 May, 2026
+
+## 11.22.2 - 05 May, 2026
+
+## 11.22.1 - 28 April, 2026
+
+## 11.22.0 - 16 April, 2026
 
 ## 11.22.0-rc.1 - 08 April, 2026
 
 * Fix old 3D puck model remaining after updating the puck model.
+
+## 11.21.8 - 25 June, 2026
+
+## 11.21.7 - 01 June, 2026
+
+## 11.21.6 - 25 May, 2026
+
+## 11.21.5 - 15 May, 2026
+
+## 11.21.4 - 05 May, 2026
+
+## 11.21.3 - 23 April, 2026
+
+## 11.21.2 - 16 April, 2026
+
+## 11.21.1 - 10 April, 2026
 
 ## 11.21.0 - 02 April, 2026
 

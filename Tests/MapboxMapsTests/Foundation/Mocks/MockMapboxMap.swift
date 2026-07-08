@@ -4,6 +4,7 @@ import UIKit
 
 final class MockMapboxMap: MapboxMapProtocol {
     var viewAnnotationAvoidLayers = Set<String>()
+    var viewAnnotationAvoidRegions = [CGRect]()
     var options: MapOptions = MapOptions()
 
     let events = MapEvents(makeGenericSubject: { _ in
@@ -290,7 +291,7 @@ final class MockMapboxMap: MapboxMapProtocol {
         guard let featureset = interaction.featureset else { return AnyCancelable.empty }
         return addInteraction(InteractionImpl(featureset: .init(core: featureset), filter: nil, type: type, onBegin: { feature, context in
             let queriedFeature = QueriedFeature(
-                __feature: MapboxCommon.Feature(feature.geoJsonFeature),
+                __feature: MapboxCommon.Feature(feature.originalFeature),
                 source: "",
                 sourceLayer: nil,
                 state: [String: Any](),
@@ -334,7 +335,7 @@ final class MockMapboxMap: MapboxMapProtocol {
             FeaturesetFeature(
                 id: feature.identifier?.string.map { FeaturesetFeatureId(id: $0) },
                 featureset: featureset,
-                geoJsonFeature: feature,
+                originalFeature: feature,
                 state: JSONObject())
         } else {
             nil

@@ -1,11 +1,12 @@
 // swiftlint:disable file_length
 import UIKit
 @_spi(Internal) @_spi(Marshalling) @_spi(Experimental) import MapboxCoreMaps
-@_implementationOnly import MapboxCommon_Private
+internal import MapboxCommon_Private
 import Turf
 
 protocol MapboxMapProtocol: AnyObject {
     var viewAnnotationAvoidLayers: Set<String> { get set }
+    var viewAnnotationAvoidRegions: [CGRect] { get set }
     var cameraBounds: CameraBounds { get }
     var cameraState: CameraState { get }
     var size: CGSize { get }
@@ -1590,7 +1591,7 @@ extension MapboxMap {
 
 extension MapboxMap: AttributionDataSource {
     func loadAttributions(completion: @escaping ([Attribution]) -> Void) {
-        Attribution.parse(__map.getAttributions(), completion: completion)
+        completion(Attribution.parse(__map.getAttributions()))
     }
 }
 
@@ -1931,6 +1932,11 @@ extension MapboxMap {
     var viewAnnotationAvoidLayers: Set<String> {
         get { __map.getViewAnnotationAvoidLayers() }
         set { __map.setViewAnnotationAvoidLayersForLayerIds(newValue) }
+    }
+
+    var viewAnnotationAvoidRegions: [CGRect] {
+        get { __map.getViewAnnotationAvoidRegions().map(CGRect.init) }
+        set { __map.setViewAnnotationAvoidRegionsForRegions(newValue.map(CoreScreenBox.init)) }
     }
 
     func setViewAnnotationPositionsUpdateCallback(_ callback: ViewAnnotationPositionsUpdateCallback?) {

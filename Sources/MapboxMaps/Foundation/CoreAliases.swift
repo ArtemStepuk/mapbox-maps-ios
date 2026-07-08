@@ -1,5 +1,5 @@
-@_implementationOnly import MapboxCoreMaps_Private
-@_implementationOnly import MapboxCommon_Private
+internal import MapboxCoreMaps_Private
+internal import MapboxCommon_Private
 @_spi(Internal) import MapboxCoreMaps
 
 typealias CoreCameraOptions = MapboxCoreMaps_Private.__CameraOptions
@@ -20,7 +20,7 @@ typealias CoreScreenCoordinate = MapboxCoreMaps_Private.__ScreenCoordinate
 typealias CoreScreenBox = MapboxCoreMaps_Private.ScreenBox
 typealias CoreEdgeInsets = MapboxCoreMaps_Private.__EdgeInsets
 typealias CoreTileCoverOptions = MapboxCoreMaps_Private.TileCoverOptions
-typealias CoreMapsImage = MapboxCoreMaps_Private.__MBXImage
+typealias CoreMapsImage = MapboxCoreMaps.MBXImage
 typealias CoreCustomRasterSourceTileData = MapboxCoreMaps_Private.CustomRasterSourceTileData
 typealias CoreStyleManager = MapboxCoreMaps_Private.StyleManager
 typealias CoreGeoJSONSourceData = MapboxCoreMaps_Private.GeoJSONSourceData

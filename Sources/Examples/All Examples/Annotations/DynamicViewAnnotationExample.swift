@@ -1,7 +1,7 @@
-import UIKit
-@_spi(Experimental) import MapboxMaps
 import CoreLocation
 import MapboxCoreMaps
+@_spi(Experimental) import MapboxMaps
+import UIKit
 
 private let simulatedCoordinate = CLLocationCoordinate2D(latitude: 37.6421, longitude: -122.4062)
 
@@ -41,12 +41,16 @@ final class DynamicViewAnnotationExample: UIViewController, ExampleProtocol {
         button.addTarget(self, action: #selector(changeMode), for: .touchUpInside)
         NSLayoutConstraint.activate([
             button.widthAnchor.constraint(equalToConstant: 200),
-            button.heightAnchor.constraint(equalToConstant: 40)
+            button.heightAnchor.constraint(equalToConstant: 40),
         ])
         return button
     }()
 
     private var driveMode = false
+
+    // Debug overlay highlighting the view annotation avoid regions.
+    private let avoidRegionsView = AvoidRegionsView()
+    private var didSetupAvoidRegions = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,9 +59,16 @@ final class DynamicViewAnnotationExample: UIViewController, ExampleProtocol {
         mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(mapView)
 
+        avoidRegionsView.frame = mapView.bounds
+        avoidRegionsView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        avoidRegionsView.isUserInteractionEnabled = false
+        mapView.addSubview(avoidRegionsView)
+
         updateModeButton()
 
-        mapView.location.options = LocationOptions(puckType: .puck2D(.init(topImage: UIImage(named: "dash-puck"))), puckBearing: .heading, puckBearingEnabled: true)
+        mapView.location.options = LocationOptions(
+            puckType: .puck2D(.init(topImage: UIImage(named: "dash-puck"))), puckBearing: .heading,
+            puckBearingEnabled: true)
 
         mapView.viewport.options.usesSafeAreaInsetsAsPadding = true
 
@@ -70,7 +81,8 @@ final class DynamicViewAnnotationExample: UIViewController, ExampleProtocol {
         self.view.addSubview(modeButton)
         NSLayoutConstraint.activate([
             self.view.centerXAnchor.constraint(equalTo: modeButton.centerXAnchor),
-            self.view.safeAreaLayoutGuide.bottomAnchor.constraint(equalToSystemSpacingBelow: modeButton.bottomAnchor, multiplier: 1)
+            self.view.safeAreaLayoutGuide.bottomAnchor.constraint(
+                equalToSystemSpacingBelow: modeButton.bottomAnchor, multiplier: 1),
         ])
 
         addParkingAnnotation(
@@ -182,8 +194,11 @@ final class DynamicViewAnnotationExample: UIViewController, ExampleProtocol {
     private func updateViewport(animated: Bool, completion: (() -> Void)? = nil) {
         var viewportState: ViewportState?
         if driveMode {
-            viewportState = mapView.viewport.makeFollowPuckViewportState(options:
-                    .init(padding: .init(top: 100, left: 100, bottom: 100, right: 100), zoom: 18, bearing: .heading, pitch: 70)
+            viewportState = mapView.viewport.makeFollowPuckViewportState(
+                options:
+                    .init(
+                        padding: .init(top: 100, left: 100, bottom: 100, right: 100), zoom: 18, bearing: .heading,
+                        pitch: 70)
             )
         } else {
             if let route = routes.first(where: \.selected), let geometry = route.feature.geometry {
@@ -196,7 +211,9 @@ final class DynamicViewAnnotationExample: UIViewController, ExampleProtocol {
         if let viewportState {
             mapView.viewport.transition(
                 to: viewportState,
-                transition: animated ? mapView.viewport.makeDefaultViewportTransition() : mapView.viewport.makeImmediateViewportTransition()
+                transition: animated
+                    ? mapView.viewport.makeDefaultViewportTransition()
+                    : mapView.viewport.makeImmediateViewportTransition()
             ) { _ in completion?() }
         } else {
             completion?()
@@ -218,9 +235,53 @@ final class DynamicViewAnnotationExample: UIViewController, ExampleProtocol {
         }
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        guard !didSetupAvoidRegions, mapView.bounds.width > 0, mapView.bounds.height > 0 else { return }
+        didSetupAvoidRegions = true
+        setupAvoidRegions()
+    }
+
+    /// Adds rectangular regions that view annotations with `enableAvoidRegions` should avoid,
+    /// and renders a debug overlay highlighting them.
+    private func setupAvoidRegions() {
+        let size: CGFloat = 150
+        let bounds = mapView.bounds
+        let regions = [
+            CGRect(x: 0, y: 0, width: size, height: size),
+            CGRect(x: bounds.width - size, y: 0, width: size, height: size),
+            CGRect(x: bounds.width - size, y: (bounds.height - size) / 2, width: size, height: size),
+        ]
+        mapView.viewAnnotations.viewAnnotationAvoidRegions = regions
+        avoidRegionsView.regions = regions
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setToolbarHidden(false, animated: false)
+    }
+}
+
+/// A view that draws the view annotation avoid regions for debugging.
+private final class AvoidRegionsView: UIView {
+    var regions: [CGRect] = [] {
+        didSet { setNeedsDisplay() }
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        backgroundColor = .clear
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func draw(_ rect: CGRect) {
+        guard let context = UIGraphicsGetCurrentContext() else { return }
+        context.setStrokeColor(UIColor.red.cgColor)
+        context.setLineWidth(1)
+        regions.forEach { context.stroke($0) }
     }
 }
 
@@ -259,9 +320,9 @@ private final class Route {
     func updateProgress(with coordinate: CLLocationCoordinate2D?) {
         var progress = 0.0
         if let coordinate,
-           case let .lineString(s) = feature.geometry,
-           let doneDistance = s.distance(to: coordinate),
-           let length = s.distance() {
+            case .lineString(let s) = feature.geometry,
+            let doneDistance = s.distance(to: coordinate),
+            let length = s.distance() {
             progress = doneDistance / length
         }
 
@@ -317,19 +378,22 @@ private final class Route {
         }
         etaAnnotation.variableAnchors = .all
         etaAnnotation.minZoom = 8
+        etaAnnotation.enableAvoidRegions = true
         etaView.onTap = { [weak self] in self?.onTap?() }
 
         self.etaAnnotation = etaAnnotation
         updateSelected()
 
         mapView.viewAnnotations.add(etaAnnotation)
-        mapView.mapboxMap.addInteraction(TapInteraction(.layer(layerId)) { [weak self] feature, _ in
-            guard let self,
-                  let onTap = onTap,
-                  feature.id?.id == self.name else { return false }
-            onTap()
-            return true
-        })
+        mapView.mapboxMap.addInteraction(
+            TapInteraction(.layer(layerId)) { [weak self] feature, _ in
+                guard let self,
+                    let onTap = onTap,
+                    feature.id?.id == self.name
+                else { return false }
+                onTap()
+                return true
+            })
     }
 
     func remove() {
@@ -346,14 +410,15 @@ private final class Route {
     private func updateSelected() {
         etaAnnotation?.priority = selected ? 1 : 0
         etaView?.selected = selected
-        mapView?.mapboxMap.setFeatureState(sourceId: layerId, featureId: name, state: ["selected": selected]) {_ in}
+        mapView?.mapboxMap.setFeatureState(sourceId: layerId, featureId: name, state: ["selected": selected]) { _ in }
 
         etaView?.hint = selected ? nil : hint
         etaAnnotation?.setNeedsUpdateSize()
     }
 
     private func updateVisible() {
-        try? mapView?.mapboxMap.setLayerProperty(for: layerId, property: "visibility", value: visible ? "visible" : "none")
+        try? mapView?.mapboxMap.setLayerProperty(
+            for: layerId, property: "visibility", value: visible ? "visible" : "none")
     }
 
     static func load(name: String, time: String) -> Route {
@@ -394,7 +459,7 @@ private final class ParkingAnnotationView: UIView {
             stack.topAnchor.constraint(equalTo: topAnchor, constant: 3),
             stack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -3),
             icon.widthAnchor.constraint(equalToConstant: 24),
-            icon.heightAnchor.constraint(equalToConstant: 24)
+            icon.heightAnchor.constraint(equalToConstant: 24),
         ])
         layer.shadowColor = UIColor(red: 0.084, green: 0.176, blue: 0.283, alpha: 0.25).cgColor
         layer.shadowOpacity = 1
@@ -482,7 +547,8 @@ final class ETAView: UIView {
     }
 
     private var attributedText: NSAttributedString {
-        let text = NSMutableAttributedString(attributedString:
+        let text = NSMutableAttributedString(
+            attributedString:
                 .labelText(text, size: 16, color: selected ? .white : .black, bold: true))
         if let hint {
             text.append(NSAttributedString(string: "\n"))
@@ -515,7 +581,8 @@ final class ETAView: UIView {
                 iconToText = 5.0
             }
 
-            let textPadding = padding + tailPadding + UIEdgeInsets(top: 0, left: iconFrame.width + iconToText, bottom: 0, right: 0)
+            let textPadding =
+                padding + tailPadding + UIEdgeInsets(top: 0, left: iconFrame.width + iconToText, bottom: 0, right: 0)
             let textAvailableSize = availableSize - textPadding
             var textSize = text.boundingRect(
                 with: textAvailableSize,
@@ -531,24 +598,30 @@ final class ETAView: UIView {
     }
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
-        Layout(availableSize: size, text: attributedText, showIcon: hint != nil, tailSize: tailSize, padding: padding).size
+        Layout(availableSize: size, text: attributedText, showIcon: hint != nil, tailSize: tailSize, padding: padding)
+            .size
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        let layout = Layout(availableSize: bounds.size, text: attributedText, showIcon: hint != nil, tailSize: tailSize, padding: padding)
+        let layout = Layout(
+            availableSize: bounds.size, text: attributedText, showIcon: hint != nil, tailSize: tailSize,
+            padding: padding)
         label.frame = layout.label
         iconView.frame = layout.icon
 
-        let calloutPath = UIBezierPath.calloutPath(size: bounds.size, tailSize: tailSize, cornerRadius: cornerRadius, anchor: anchor ?? .center)
+        let calloutPath = UIBezierPath.calloutPath(
+            size: bounds.size, tailSize: tailSize, cornerRadius: cornerRadius, anchor: anchor ?? .center)
         backgroundShape.path = calloutPath.cgPath
         backgroundShape.frame = bounds
     }
 }
 
 func + (lhs: UIEdgeInsets, rhs: UIEdgeInsets) -> UIEdgeInsets {
-    return UIEdgeInsets(top: lhs.top + rhs.top, left: lhs.left + rhs.left, bottom: lhs.bottom + rhs.bottom, right: lhs.right + rhs.right)
+    return UIEdgeInsets(
+        top: lhs.top + rhs.top, left: lhs.left + rhs.left, bottom: lhs.bottom + rhs.bottom, right: lhs.right + rhs.right
+    )
 }
 
 func + (lhs: CGSize, rhs: UIEdgeInsets) -> CGSize {

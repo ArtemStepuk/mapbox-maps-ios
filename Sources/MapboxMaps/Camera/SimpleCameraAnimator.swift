@@ -1,4 +1,4 @@
-@_implementationOnly import MapboxCommon_Private
+internal import MapboxCommon_Private
 import UIKit
 
 internal protocol SimpleCameraAnimatorProtocol: CameraAnimatorProtocol {
@@ -43,7 +43,8 @@ internal final class SimpleCameraAnimator: SimpleCameraAnimatorProtocol {
                 hasNilMismatch(for: \.padding) ||
                 hasNilMismatch(for: \.anchor) ||
                 hasNilMismatch(for: \.bearing) ||
-                hasNilMismatch(for: \.pitch) {
+                hasNilMismatch(for: \.pitch) ||
+                hasNilMismatch(for: \.verticalFov) {
                 Log.warning("Animator updated with differing non-nil to-value properties.", category: "maps-ios")
             }
         }
